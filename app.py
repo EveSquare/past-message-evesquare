@@ -50,7 +50,7 @@ def handle_message(event):
     # print(f'event.reply_token:{event.reply_token}')
 
     profile = line_bot_api.get_profile(event.source.user_id)
-
+    
     line_bot_api.reply_message(
             event.reply_token,
             TemplateSendMessage(
@@ -61,7 +61,7 @@ def handle_message(event):
                         PostbackTemplateAction(
                             label='Yes',
                             text='postback text',
-                            data=print("hello")
+                            data="> Yes"
                         ),
                         MessageTemplateAction(
                             label='No',
