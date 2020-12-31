@@ -1,4 +1,5 @@
 from flask import Flask, request, abort
+import random
  
 from linebot import (
     LineBotApi, WebhookHandler
@@ -8,7 +9,8 @@ from linebot.exceptions import (
 )
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, MessageTemplateAction,
-    TemplateSendMessage, ConfirmTemplate, PostbackTemplateAction
+    TemplateSendMessage, ConfirmTemplate, PostbackTemplateAction,
+    StickerMessage, StickerSendMessage
 )
 import os
  
@@ -42,6 +44,7 @@ def callback():
     return 'OK'
  
 
+
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     # print(f'event.reply_token:{event.reply_token}')
@@ -56,18 +59,37 @@ def handle_message(event):
                     text='Are you sure?',
                     actions=[
                         PostbackTemplateAction(
-                            label='postback',
+                            label='Yes',
                             text='postback text',
-                            data='action=buy&itemid=1'
+                            data=print("hello")
                         ),
                         MessageTemplateAction(
-                            label='message',
-                            text='message text'
+                            label='No',
+                            text='> No'
                         )
                     ]
                 )
             )
         )
+
+
+@handler.add(MessageEvent, message=StickerMessage)
+def handle_sticker(event):
+    sticker_list = [
+        '51626496', '51626497', '51626502', '51626504',
+        '51626508', '51626511', '51626517', '51626530'
+    ]
+
+    sticker_message = StickerSendMessage(
+        package_id='11538',
+        sticker_id=random.choice(sticker_list)
+    )
+
+    line_bot_api.reply_message(
+        event.reply_token,
+        sticker_message
+    )
+
 # port
 if __name__ == "__main__":
 #    app.run()
