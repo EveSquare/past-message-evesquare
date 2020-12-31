@@ -25,7 +25,7 @@ handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 
 @app.route("/")
 def index():
-    render_template("index.html")
+    return render_template("index.html")
 
 
 #Webhookからのリクエストをチェックします。
@@ -48,6 +48,27 @@ def callback():
     # handleの処理を終えればOK
     return 'OK'
  
+def submit_text(token):
+    line_bot_api.reply_message(
+        token,
+        TemplateSendMessage(
+            alt_text='Confirm template',
+            template=ConfirmTemplate(
+                text='Are you sure?',
+                actions=[
+                    PostbackTemplateAction(
+                        label='Yes',
+                        text='postback text',
+                        data="> Yes"
+                    ),
+                    MessageTemplateAction(
+                        label='No',
+                        text='> No'
+                    )
+                ]
+            )
+        )
+    )
 
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -56,6 +77,8 @@ def handle_message(event):
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=profile.user_id + event.message.text))
+
+    submit_text(event.reply_token)
 #     line_bot_api.reply_message(
 #         event.reply_token,
 #         TemplateSendMessage(
@@ -81,28 +104,6 @@ def handle_message(event):
 #         ]
 #     )
 # ))
-
-    # line_bot_api.reply_message(
-    #         event.reply_token,
-    #         TemplateSendMessage(
-    #             alt_text='Confirm template',
-    #             template=ConfirmTemplate(
-    #                 text='Are you sure?',
-    #                 actions=[
-    #                     PostbackTemplateAction(
-    #                         label='Yes',
-    #                         text='postback text',
-    #                         data="> Yes"
-    #                     ),
-    #                     MessageTemplateAction(
-    #                         label='No',
-    #                         text='> No'
-    #                     )
-    #                 ]
-    #             )
-    #         )
-    #     )
-
 
 
 @handler.add(MessageEvent, message=StickerMessage)
