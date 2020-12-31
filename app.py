@@ -48,9 +48,9 @@ def callback():
     # handleの処理を終えればOK
     return 'OK'
  
-def submit_text(token):
-    line_bot_api.reply_message(
-        token,
+def submit_text(user_id):
+    line_bot_api.push_message(
+        user_id,
         TemplateSendMessage(
             alt_text='Confirm template',
             template=ConfirmTemplate(
@@ -78,7 +78,7 @@ def handle_message(event):
         event.reply_token,
         TextSendMessage(text=profile.user_id + event.message.text))
 
-    submit_text(event.reply_token)
+    submit_text(profile.user_id)
 #     line_bot_api.reply_message(
 #         event.reply_token,
 #         TemplateSendMessage(
