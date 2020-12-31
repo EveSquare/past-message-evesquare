@@ -56,7 +56,7 @@ def submit_text(user_id, message):
             template=ConfirmTemplate(
                 text=f'「{message}」を登録しますか？',
                 actions=[
-                    PostbackTemplateAction(
+                    MessageTemplateAction(
                         label='Yes',
                         text='> Yes'
                     ),
@@ -73,13 +73,14 @@ def submit_text(user_id, message):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     profile = line_bot_api.get_profile(event.source.user_id)
-    # line_bot_api.reply_message(
-    #     event.reply_token,
-    #     TextSendMessage(text=event.message.text))
-    if event.message.text == "> Yes" and event.message.text == "> No":
+    line_bot_api.reply_message(
+        event.reply_token,
+        TextSendMessage(text=event.message.text))
+    message = event.message.text
+    if message == "> Yes" and message == "> No":
         pass
     else:
-        submit_text(profile.user_id,event.message.text)
+        submit_text(profile.user_id, message)
 #     line_bot_api.reply_message(
 #         event.reply_token,
 #         TemplateSendMessage(
