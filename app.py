@@ -48,18 +48,17 @@ def callback():
     # handleの処理を終えればOK
     return 'OK'
  
-def submit_text(user_id):
+def submit_text(user_id, message):
     line_bot_api.push_message(
         user_id,
         TemplateSendMessage(
             alt_text='Confirm template',
             template=ConfirmTemplate(
-                text='Are you sure?',
+                text=f'「{message}」を登録しますか？',
                 actions=[
                     PostbackTemplateAction(
                         label='Yes',
-                        text='postback text',
-                        data="> Yes"
+                        text='> Yes'
                     ),
                     MessageTemplateAction(
                         label='No',
@@ -74,11 +73,13 @@ def submit_text(user_id):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     profile = line_bot_api.get_profile(event.source.user_id)
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=profile.user_id + event.message.text))
-
-    submit_text(profile.user_id)
+    # line_bot_api.reply_message(
+    #     event.reply_token,
+    #     TextSendMessage(text=event.message.text))
+    if event.message.text == "> Yes" and event.message.text == "> No":
+        pass
+    else:
+        submit_text(profile.user_id,event.message.text)
 #     line_bot_api.reply_message(
 #         event.reply_token,
 #         TemplateSendMessage(
