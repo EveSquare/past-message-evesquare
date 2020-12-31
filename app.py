@@ -1,6 +1,5 @@
-from flask import Flask, request, abort
+from flask import Flask, request, abort, render_template
 import random
-from Crypto.Cipher import AES
  
 from linebot import (
     LineBotApi, WebhookHandler
@@ -17,15 +16,17 @@ from linebot.models import (
 import os
  
 app = Flask(__name__)
-
-key = b"J+MGhAqNuH+wV.!8"
  
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
  
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
- 
+
+@app.route("/")
+def index():
+    render_template("index.html")
+
 
 #Webhookからのリクエストをチェックします。
 @app.route("/callback", methods=['POST'])
@@ -51,14 +52,10 @@ def callback():
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
-    # print(f'event.reply_token:{event.reply_token}')
-    cipher = AES.new(key, AES.MODE_EAX)
-    ciphertext, tag = cipher.encrypt_and_digest(event.message.text)
-
+    profile = line_bot_api.get_profile(event.source.user_id)
     line_bot_api.reply_message(
         event.reply_token,
-        TextSendMessage(text=ciphertext))
-    # profile = line_bot_api.get_profile(event.source.user_id)
+        TextSendMessage(text=profile.user_id + event.message.text))
 #     line_bot_api.reply_message(
 #         event.reply_token,
 #         TemplateSendMessage(
@@ -85,26 +82,27 @@ def handle_message(event):
 #     )
 # ))
 
-#     line_bot_api.reply_message(
-#             event.reply_token,
-#             TemplateSendMessage(
-#                 alt_text='Confirm template',
-#                 template=ConfirmTemplate(
-#                     text='Are you sure?',
-#                     actions=[
-#                         PostbackTemplateAction(
-#                             label='Yes',
-#                             text='postback text',
-#                             data="> Yes"
-#                         ),
-#                         MessageTemplateAction(
-#                             label='No',
-#                             text='> No'
-#                         )
-#                     ]
-#                 )
-#             )
-#         )
+    # line_bot_api.reply_message(
+    #         event.reply_token,
+    #         TemplateSendMessage(
+    #             alt_text='Confirm template',
+    #             template=ConfirmTemplate(
+    #                 text='Are you sure?',
+    #                 actions=[
+    #                     PostbackTemplateAction(
+    #                         label='Yes',
+    #                         text='postback text',
+    #                         data="> Yes"
+    #                     ),
+    #                     MessageTemplateAction(
+    #                         label='No',
+    #                         text='> No'
+    #                     )
+    #                 ]
+    #             )
+    #         )
+    #     )
+
 
 
 @handler.add(MessageEvent, message=StickerMessage)
