@@ -10,7 +10,8 @@ from linebot.exceptions import (
 from linebot.models import (
     MessageEvent, TextMessage, TextSendMessage, MessageTemplateAction,
     TemplateSendMessage, ConfirmTemplate, PostbackTemplateAction,
-    StickerMessage, StickerSendMessage
+    StickerMessage, StickerSendMessage, ButtonsTemplate,
+    PostbackAction, MessageAction, URIAction
 )
 import os
  
@@ -49,8 +50,33 @@ def callback():
 def handle_message(event):
     # print(f'event.reply_token:{event.reply_token}')
 
-    profile = line_bot_api.get_profile(event.source.user_id)
-    
+    # profile = line_bot_api.get_profile(event.source.user_id)
+    line_bot_api.reply_message(
+        event.reply_token,
+        TemplateSendMessage(
+        alt_text='Buttons template',
+        template=ButtonsTemplate(
+        thumbnail_image_url='https://example.com/image.jpg',
+        title='Menu',
+        text='Please select',
+        actions=[
+            PostbackAction(
+                label='postback',
+                display_text='postback text',
+                data='action=buy&itemid=1'
+            ),
+            MessageAction(
+                label='message',
+                text='message text'
+            ),
+            URIAction(
+                label='uri',
+                uri='http://example.com/'
+            )
+        ]
+    )
+))
+
     line_bot_api.reply_message(
             event.reply_token,
             TemplateSendMessage(
