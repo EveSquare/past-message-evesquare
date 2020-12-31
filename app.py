@@ -47,11 +47,6 @@ def callback():
 ###############################################
 #LINEのメッセージの取得と返信内容の設定(オウム返し)
 ###############################################
- 
-#LINEでMessageEvent（普通のメッセージを送信された場合）が起こった場合に、
-#def以下の関数を実行します。
-#reply_messageの第一引数のevent.reply_tokenは、イベントの応答に用いるトークンです。 
-#第二引数には、linebot.modelsに定義されている返信用のTextSendMessageオブジェクトを渡しています。
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -59,10 +54,12 @@ def handle_message(event):
 
     profile = line_bot_api.get_profile(event.source.user_id)
 
+    line_bot_api.multicast(['Ud04d8ad9c4a2070d410d4b913422da5f'], TextSendMessage(text='Hello World!'))
+
     line_bot_api.reply_message(
         event.reply_token,
         TextSendMessage(text=profile.user_id)) #ここでオウム返しのメッセージを返します。
- 
+
 # ポート番号の設定
 if __name__ == "__main__":
 #    app.run()
