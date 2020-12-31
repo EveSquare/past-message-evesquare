@@ -7,22 +7,20 @@ from linebot.exceptions import (
     InvalidSignatureError
 )
 from linebot.models import (
-    MessageEvent, TextMessage, TextSendMessage,
+    MessageEvent, TextMessage, TextSendMessage, MessageTemplateAction,
+    TemplateSendMessage, ConfirmTemplate, PostbackTemplateAction
 )
 import os
  
 app = Flask(__name__)
  
-#環境変数取得
-# LINE Developersで設定されているアクセストークンとChannel Secretをを取得し、設定します。
 YOUR_CHANNEL_ACCESS_TOKEN = os.environ["YOUR_CHANNEL_ACCESS_TOKEN"]
 YOUR_CHANNEL_SECRET = os.environ["YOUR_CHANNEL_SECRET"]
  
 line_bot_api = LineBotApi(YOUR_CHANNEL_ACCESS_TOKEN)
 handler = WebhookHandler(YOUR_CHANNEL_SECRET)
  
- 
-## 1 ##
+
 #Webhookからのリクエストをチェックします。
 @app.route("/callback", methods=['POST'])
 def callback():
@@ -43,10 +41,6 @@ def callback():
     # handleの処理を終えればOK
     return 'OK'
  
-## 2 ##
-###############################################
-#LINEのメッセージの取得と返信内容の設定(オウム返し)
-###############################################
 
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
@@ -54,13 +48,27 @@ def handle_message(event):
 
     profile = line_bot_api.get_profile(event.source.user_id)
 
-    line_bot_api.multicast(['Ud04d8ad9c4a2070d410d4b913422da5f'], TextSendMessage(text='Hello World!'))
-
     line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=profile.user_id)) #ここでオウム返しのメッセージを返します。
-
-# ポート番号の設定
+            event.reply_token,
+            TemplateSendMessage(
+                alt_text='Confirm template',
+                template=ConfirmTemplate(
+                    text='Are you sure?',
+                    actions=[
+                        PostbackTemplateAction(
+                            label='postback',
+                            text='postback text',
+                            data='action=buy&itemid=1'
+                        ),
+                        MessageTemplateAction(
+                            label='message',
+                            text='message text'
+                        )
+                    ]
+                )
+            )
+        )
+# port
 if __name__ == "__main__":
 #    app.run()
     port = int(os.getenv("PORT", 5000))
