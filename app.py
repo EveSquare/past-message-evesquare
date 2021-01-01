@@ -30,7 +30,7 @@ def index():
 @app.route('/triger')
 def triger():
     line_bot_api.multicast(['Ud04d8ad9c4a2070d410d4b913422da5f'], TextSendMessage(text='Hello World!'))
-    return redirect('/')
+    return render_template("index.html")
 
 
 #Webhookからのリクエストをチェックします。
