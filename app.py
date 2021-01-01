@@ -1,4 +1,4 @@
-from flask import Flask, request, abort, render_template
+from flask import Flask, request, abort, render_template, redirect
 import random
  
 from linebot import (
@@ -27,6 +27,11 @@ handler = WebhookHandler(YOUR_CHANNEL_SECRET)
 def index():
     return render_template("index.html")
 
+@app.route('/triger')
+def triger():
+    line_bot_api.multicast(['Ud04d8ad9c4a2070d410d4b913422da5f'], TextSendMessage(text='Hello World!'))
+    return redirect('/')
+
 
 #Webhookからのリクエストをチェックします。
 @app.route("/callback", methods=['POST'])
@@ -48,7 +53,13 @@ def callback():
     # handleの処理を終えればOK
     return 'OK'
  
-def submit_text(user_id, message):
+def submit_text(user_id, message, status):
+    # 2.stautsが0だったら「このメッセージで登録しますか？」
+    # 3.statusが1だったら「この日付で登録しますか？」
+    if status == 0:
+        pass
+    if status == 1:
+        pass
     line_bot_api.push_message(
         user_id,
         TemplateSendMessage(
@@ -73,11 +84,18 @@ def submit_text(user_id, message):
 @handler.add(MessageEvent, message=TextMessage)
 def handle_message(event):
     profile = line_bot_api.get_profile(event.source.user_id)
-    line_bot_api.reply_message(
-        event.reply_token,
-        TextSendMessage(text=event.message.text))
+    # line_bot_api.reply_message(
+    #     event.reply_token,
+    #     TextSendMessage(text=event.message.text))
+    # 1.ユーザのstatusを確認。
+
+    # 2.stautsが0だったら「このメッセージで登録しますか？」
+    # 3.statusが1だったら「この日付で登録しますか？」
     message = event.message.text
-    if message == "> Yes" and message == "> No":
+    if message == "> Yes":
+        # message, 
+        pass
+    if message == "> No":
         pass
     else:
         submit_text(profile.user_id, message)
