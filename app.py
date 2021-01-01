@@ -198,16 +198,17 @@ def handle_message(event):
         
     # 2.stautsが0だったら「このメッセージで登録しますか？」Yes or No
     if status == 0:
-        update_db(id, f'message = "{message}"')
         if message == "> Yes":
             # message, 
-            update_db(id, f'message = "{message}", status = 1')
+            update_db(id, f'status = 1')
             send_message(id, "メッセージを登録しました。次に日付を設定してください")
             return
         if message == "> No":
+            update_db(id, f'message = "{message}"')
             send_message(id, "メッセージを入力してください")
             return
         else:
+            update_db(id, f'message = "{message}"')
             submit_card(id, message, status)
             return
     # 3.statusが1だったら「この日付で登録しますか？」
