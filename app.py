@@ -61,7 +61,7 @@ def submit_card(user_id, message, status):
     if status is None or status == 0:
         text_c = f'「{message}」を登録しますか？'
     if status == 1:
-        text_c = f'「{message}」この日にちで登録しますか？'
+        text_c = f'「{message}」この日付で登録しますか？'
     line_bot_api.push_message(
         user_id,
         TemplateSendMessage(
@@ -194,10 +194,11 @@ def handle_message(event):
         #登録
         # push_db(date:str, content:str, created_datetime:str, user_id:str, status:int)
         submit_card(id, message, status)
-        push_db("", "", "", id, 0)
+        push_db("", message, "", id, 0)
         
     # 2.stautsが0だったら「このメッセージで登録しますか？」Yes or No
     if status == 0:
+        update_db(id, f"message = {message}")
         if message == "> Yes":
             # message, 
             update_db(id, f'message = "{message}", status = 1')
