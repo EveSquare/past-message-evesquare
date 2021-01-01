@@ -198,7 +198,7 @@ def handle_message(event):
         
     # 2.stautsが0だったら「このメッセージで登録しますか？」Yes or No
     if status == 0:
-        update_db(id, f"message = {message}")
+        update_db(id, f'"message = "{message}"')
         if message == "> Yes":
             # message, 
             update_db(id, f'message = "{message}", status = 1')
