@@ -163,6 +163,11 @@ def pattern_math(date):
             # Tuple unpacking
             year, month, day = int(split[1]),int(split[3]),int(split[5])
 
+        nows = now().split("-")
+
+        if dt.datetime(int(nows[0]), int(nows[1]), int(nows[2])) > dt.datetime(year, month, day):
+            return False
+
         if year>3000 or month >12 or day > 31:
             return False
         else:
@@ -171,6 +176,7 @@ def pattern_math(date):
             if day <= 9:
                 day = '0' + str(day)
             return [str(year), str(month), str(day)]
+
     except:
         return False
 
@@ -231,7 +237,7 @@ def handle_message(event):
             submit_card(id, message, status)
             return
         elif not dates:
-            send_message(id, "日付のフォーマットが間違っています")
+            send_message(id, "日付のフォーマットが間違っているか、過去の日付を指定しています。")
             return
 
 #     line_bot_api.reply_message(
