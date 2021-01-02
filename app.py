@@ -2,6 +2,7 @@ from flask import Flask, request, abort, render_template, redirect
 import random
 import sqlite3
 import datetime as dt
+from datetime import timedelta, timezone
 import secrets as se
 import re
 import requests
@@ -19,6 +20,8 @@ from linebot.models import (
     PostbackAction, MessageAction, URIAction
 )
 import os
+
+JST = timezone(timedelta(hours=+9), 'JST')
  
 app = Flask(__name__)
 path = "status.db"
@@ -181,7 +184,7 @@ def pattern_math(date):
         return False
 
 def now():
-    return dt.datetime.now().strftime("%Y-%m-%d")
+    return dt.datetime.now(JST).strftime("%Y-%m-%d")
 
 
 @handler.add(MessageEvent, message=TextMessage)
@@ -207,7 +210,7 @@ def handle_message(event):
         if message == "> Yes":
             # message, 
             update_db(id, f'status = 1')
-            send_message(id, "メッセージを登録しました。次に日付を設定してください")
+            send_message(id, "メッセージを登録しました。次に日付を設定してください。例「2025 1 1」")
             return
         if message == "> No":
             update_db(id, f'message = "{message}"')
@@ -227,7 +230,7 @@ def handle_message(event):
             delete_db(id)
             return
         if message == "> No":
-            send_message(id, "日付を設定してください")
+            send_message(id, "日付を設定してください。例「2025 1 1」")
             return
         
         dates = pattern_math(message)
